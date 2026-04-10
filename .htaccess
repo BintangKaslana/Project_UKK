@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Server existing files directly
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L] 
+
+    # Route Everything else through the front controller
+    RewriteRule ^ public/index.php [L]
+</IfModule>

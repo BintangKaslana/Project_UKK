@@ -1,0 +1,74 @@
+/* Custom styles */
+
+/* ===== COLOR PALETTE ===== */
+:root {
+    --royal-blue: #4455DD;
+    --sky-blue: #33AAEE;
+    --yellow: #FFDD44;
+    --red: #EE6666;
+    --green: #BBDD22;
+    --white: #ffffff;
+    --light: #f5f6fa;
+    --dark: #222222;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+    background-color: var(--royal-blue) !important;
+}
+
+.navbar .navbar-brand,
+.navbar .nav-link {
+    color: var(--white) !important;
+}
+
+.navbar .nav-link:hover {
+    color: var(--yellow) !important;
+}
+
+/* ===== BUTTONS ===== */
+.btn-primary {
+    background-color: var(--sky-blue) !important;
+    border-color: var(--sky-blue) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--royal-blue) !important;
+    border-color: var(--royal-blue) !important;
+}
+
+.btn-danger {
+    background-color: var(--red) !important;
+    border-color: var(--red) !important;
+}
+
+/* ===== STATUS BADGE ===== */
+.badge-menunggu {
+    background-color: var(--yellow);
+    color: var(--dark);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+.badge-proses {
+    background-color: var(--sky-blue);
+    color: var(--white);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+.badge-selesai {
+    background-color: var(--green);
+    color: var(--dark);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+/* ===== GENERAL ===== */
+body {
+    background-color: var(--light);
+    color: var(--dark);
+}
