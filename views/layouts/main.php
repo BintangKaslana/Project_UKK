@@ -6,39 +6,24 @@
     <title>Aplikasi Pengaduan Sarana Sekolah</title>
     <link rel="stylesheet" href="/ukk_bintang_26/public/css/style.css">
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg" style="background-color: #4455DD;">
-        <div class="container">
-            <!-- Logo kiri -->
-            <a class="navbar-brand d-flex align-items-center gap-2" href="/ukk_bintang_26/">
-                <div style="width:45px; height:45px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.55rem; color:#4455DD; font-weight:bold; text-align:center; line-height:1.3;">
+<body class="bg-gray-50">
+    <nav class="bg-[#4455DD] shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 bg-white rounded-full flex items-center justify-center text-[#4455DD] font-bold text-[10px] text-center leading-tight">
                     LOGO<br>SEKOLAH
                 </div>
-                <div style="width:45px; height:45px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.55rem; color:#4455DD; font-weight:bold; text-align:center; line-height:1.3;">
+                <div class="w-11 h-11 bg-white rounded-full flex items-center justify-center text-[#4455DD] font-bold text-[10px] text-center leading-tight">
                     LOGO<br>PEMDA
                 </div>
-            </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarMain">
-                <ul class="navbar-nav ms-auto">
-    <li class="nav-item">
-        <a class="nav-link text-white" href="/ukk_bintang_26/">Beranda</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-white" href="/ukk_bintang_26/aspirasi">Sampaikan Aspirasi</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-white" href="/ukk_bintang_26/histori">Histori Aspirasi</a>
-    </li>
-</ul>
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="/ukk_bintang_26/" class="text-white hover:text-[#FFDD44] transition text-sm font-medium">Beranda</a>
+                <a href="/ukk_bintang_26/aspirasi" class="text-white hover:text-[#FFDD44] transition text-sm font-medium">Sampaikan Aspirasi</a>
+                <a href="/ukk_bintang_26/histori" class="text-white hover:text-[#FFDD44] transition text-sm font-medium">Histori Aspirasi</a>
             </div>
         </div>
     </nav>
-
     <main>
         <?= $content ?>
     </main>

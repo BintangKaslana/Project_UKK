@@ -3,54 +3,60 @@ $stmt = $conn->query("SELECT id, category_name FROM kategori ORDER BY id");
 $result = $stmt->fetchAll();
 ?>
 
-<div class="container py-5" style="max-width: 700px;">
-    <h2 class="fw-bold mb-1" style="color: #4455DD;">Sampaikan Aspirasi</h2>
-    <p class="text-muted mb-4">Isi form di bawah ini untuk menyampaikan pengaduanmu.</p>
+<div class="max-w-2xl mx-auto px-4 py-10">
+    <h2 class="text-3xl font-bold text-[#4455DD] mb-1">Sampaikan Aspirasi</h2>
+    <p class="text-gray-500 mb-6">Isi form di bawah ini untuk menyampaikan pengaduanmu.</p>
 
     <?php if (isset($_GET['message']) && $_GET['message'] === 'success') { ?>
-        <div class="alert" style="background-color: #BBDD22; color: #222; border: none;">
+        <div class="bg-[#BBDD22] text-gray-800 px-4 py-3 rounded-lg mb-4">
             ✅ Pengaduan berhasil dikirim!
         </div>
     <?php } ?>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-4">
-            <form action="/ukk_bintang_26/save_aspirasi" method="post" class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">NIS</label>
-                    <input type="number" name="nis" class="form-control" required>
+    <div class="bg-white rounded-xl shadow p-6">
+        <form action="/ukk_bintang_26/save_aspirasi" method="post" class="space-y-4">
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">NIS</label>
+                    <input type="number" name="nis" required
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4455DD]">
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Nama Lengkap</label>
-                    <input type="text" name="full_name" class="form-control" required>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
+                    <input type="text" name="full_name" required
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4455DD]">
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Kelas</label>
-                    <input type="text" name="class" class="form-control" required>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Kelas</label>
+                    <input type="text" name="class" required
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4455DD]">
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Kategori</label>
-                    <select name="category" class="form-select" required>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Kategori</label>
+                    <select name="category" required
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4455DD]">
                         <?php foreach ($result as $row) { ?>
                             <option value="<?= $row['id'] ?>"><?= htmlspecialchars($row['category_name']) ?></option>
                         <?php } ?>
                     </select>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Lokasi</label>
-                    <input type="text" name="location" class="form-control" required>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Lokasi</label>
+                    <input type="text" name="location" required
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4455DD]">
                 </div>
-                <div class="col-12">
-                    <label class="form-label fw-semibold">Deskripsi</label>
-                    <textarea name="description" class="form-control" rows="5" required></textarea>
-                </div>
-                <div class="col-12">
-                    <button type="submit" class="btn px-4 py-2" 
-                            style="background-color: #4455DD; color: #fff; border: none;">
-                        Kirim Pengaduan
-                    </button>
-                </div>
-            </form>
-        </div>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Deskripsi</label>
+                <textarea name="description" rows="5" required
+                          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4455DD]"></textarea>
+            </div>
+            <button type="submit"
+                    class="bg-[#4455DD] text-white px-6 py-2 rounded-lg font-semibold hover:opacity-90 transition">
+                Kirim Pengaduan
+            </button>
+        </form>
     </div>
 </div>

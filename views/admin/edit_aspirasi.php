@@ -12,28 +12,44 @@ $stmt->execute([intval($_GET['aspiration_id'])]);
 $row = $stmt->fetch();
 ?>
 
-<label>NIS</label>
-<p><?php echo $row['nis']; ?></p>
-<label>Nama Lengkap</label>
-<p><?php echo $row['full_name']; ?></p>
-<label>Kelas</label>
-<p><?php echo $row['class']; ?></p>
-<label>Kategori</label>
-<p><?php echo $row['category_name']; ?></p>
-<label>Lokasi</label>
-<p><?php echo $row['location']; ?></p>
-<label>Deskripsi</label>
-<p><?php echo $row['description']; ?></p>
+<div class="max-w-2xl mx-auto">
+    <h2 class="text-2xl font-bold text-[#4455DD] mb-6">Edit Aspirasi</h2>
 
-<form action="<?= BASE_PATH ?>/admin/update_aspirasi" method="post">
-    <input type="hidden" name="aspiration_id" value="<?php echo $row['aspiration_id']; ?>">
-    <label>Status</label>
-    <select name="status" class="form-select mb-2">
-        <option value="menunggu" <?php if ($row['status'] == 'menunggu') echo 'selected'; ?>>Menunggu</option>
-        <option value="proses"   <?php if ($row['status'] == 'proses')   echo 'selected'; ?>>Proses</option>
-        <option value="selesai"  <?php if ($row['status'] == 'selesai')  echo 'selected'; ?>>Selesai</option>
-    </select>
-    <label>Feedback</label>
-    <textarea name="feedback" class="form-control mb-2" rows="5"><?php echo $row['feedback']; ?></textarea>
-    <input type="submit" value="Update" class="btn btn-primary">
-</form>
+    <div class="bg-white rounded-xl shadow p-6 mb-6">
+        <div class="grid grid-cols-2 gap-4 text-sm">
+            <div><span class="font-semibold text-gray-600">NIS:</span> <?= $row['nis'] ?></div>
+            <div><span class="font-semibold text-gray-600">Nama:</span> <?= $row['full_name'] ?></div>
+            <div><span class="font-semibold text-gray-600">Kelas:</span> <?= $row['class'] ?></div>
+            <div><span class="font-semibold text-gray-600">Kategori:</span> <?= $row['category_name'] ?></div>
+            <div><span class="font-semibold text-gray-600">Lokasi:</span> <?= $row['location'] ?></div>
+            <div class="col-span-2"><span class="font-semibold text-gray-600">Deskripsi:</span> <?= $row['description'] ?></div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow p-6">
+        <form action="<?= BASE_PATH ?>/admin/update_aspirasi" method="post" class="space-y-4">
+            <input type="hidden" name="aspiration_id" value="<?= $row['aspiration_id'] ?>">
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+                <select name="status" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4455DD]">
+                    <option value="menunggu" <?= $row['status'] == 'menunggu' ? 'selected' : '' ?>>Menunggu</option>
+                    <option value="proses"   <?= $row['status'] == 'proses'   ? 'selected' : '' ?>>Proses</option>
+                    <option value="selesai"  <?= $row['status'] == 'selesai'  ? 'selected' : '' ?>>Selesai</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Feedback</label>
+                <textarea name="feedback" rows="5"
+                          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4455DD]"><?= $row['feedback'] ?></textarea>
+            </div>
+            <div class="flex gap-3">
+                <button type="submit" class="bg-[#4455DD] text-white px-6 py-2 rounded-lg font-semibold hover:opacity-90 transition">
+                    Update
+                </button>
+                <a href="<?= BASE_PATH ?>/admin" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:opacity-90 transition">
+                    Batal
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

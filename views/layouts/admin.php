@@ -4,15 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Aplikasi Pengaduan Sarana Sekolah</title>
-        <link rel="stylesheet" href="<?= BASE_PATH ?>/public/css/style.css">
+    <link rel="stylesheet" href="/ukk_bintang_26/public/css/style.css">
 </head>
-<body>
-    
+<body class="bg-gray-50">
     <?php require VIEW_PATH . '/partials/navbar_admin.php'; ?>
-    <main class="container py-4">
+    <main class="max-w-7xl mx-auto px-4 py-6">
         <?= $content ?>
     </main>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

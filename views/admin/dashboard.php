@@ -4,7 +4,6 @@ if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
     exit();
 }
 
-// Filter
 $filterKategori = isset($_GET['kategori']) ? trim($_GET['kategori']) : '';
 $filterNis      = isset($_GET['nis']) ? trim($_GET['nis']) : '';
 $filterBulan    = isset($_GET['bulan']) ? trim($_GET['bulan']) : '';
@@ -19,47 +18,28 @@ $sql = "SELECT ia.id, s.nis, s.full_name, s.class, k.category_name, ia.location,
     WHERE 1=1";
 
 $params = [];
-
-if ($filterKategori !== '') {
-    $sql .= " AND k.id = ?";
-    $params[] = $filterKategori;
-}
-
-if ($filterNis !== '') {
-    $sql .= " AND s.nis = ?";
-    $params[] = $filterNis;
-}
-
-if ($filterBulan !== '') {
-    $sql .= " AND TO_CHAR(ia.created_at, 'YYYY-MM') = ?";
-    $params[] = $filterBulan;
-}
-
-if ($filterTanggal !== '') {
-    $sql .= " AND DATE(ia.created_at) = ?";
-    $params[] = $filterTanggal;
-}
-
-if ($filterStatus !== '') {
-    $sql .= " AND a.status = ?";
-    $params[] = $filterStatus;
-}
-
+if ($filterKategori !== '') { $sql .= " AND k.id = ?"; $params[] = $filterKategori; }
+if ($filterNis !== '')      { $sql .= " AND s.nis = ?"; $params[] = $filterNis; }
+if ($filterBulan !== '')    { $sql .= " AND TO_CHAR(ia.created_at, 'YYYY-MM') = ?"; $params[] = $filterBulan; }
+if ($filterTanggal !== '')  { $sql .= " AND DATE(ia.created_at) = ?"; $params[] = $filterTanggal; }
+if ($filterStatus !== '')   { $sql .= " AND a.status = ?"; $params[] = $filterStatus; }
 $sql .= " ORDER BY ia.id DESC";
+
 $stmt = $conn->prepare($sql);
 $stmt->execute($params);
 ?>
 
 <?php if (isset($_GET['message']) && $_GET['message'] === 'updated') { ?>
-    <div class="alert alert-success">Aspirasi berhasil diperbarui.</div>
+    <div class="bg-[#BBDD22] text-gray-800 px-4 py-3 rounded-lg mb-4">Aspirasi berhasil diperbarui.</div>
 <?php } ?>
 
-<h2>Daftar Aspirasi Siswa</h2>
+<h2 class="text-2xl font-bold text-[#4455DD] mb-4">Daftar Aspirasi Siswa</h2>
 
-<form method="get" class="mb-3 row g-2 align-items-center">
-    <div class="col-auto">
-        <select name="kategori" class="form-select">
-            <option value="">Semua Kategori</option>
+<form method="get" class="bg-white rounded-xl shadow p-4 mb-6 flex flex-wrap gap-3 items-end">
+    <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1">Kategori</label>
+        <select name="kategori" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4455DD]">
+            <option value="">PILIH KATEGORI</option>
             <?php
             $kStmt = $conn->query("SELECT id, category_name FROM kategori ORDER BY id");
             foreach ($kStmt->fetchAll() as $k) {
@@ -69,65 +49,79 @@ $stmt->execute($params);
             ?>
         </select>
     </div>
-    <div class="col-auto">
-        <input type="text" name="nis" class="form-control" placeholder="Filter NIS..." value="<?= htmlspecialchars($filterNis) ?>">
+    <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1">NIS</label>
+        <input type="text" name="nis" placeholder="Filter NIS..." value="<?= htmlspecialchars($filterNis) ?>"
+               class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4455DD]">
     </div>
-    <div class="col-auto">
-        <select name="status" class="form-select">
-            <option value="">Semua Status</option>
-            <option value="menunggu" <?= $filterStatus === 'menunggu' ? 'selected' : '' ?>>Menunggu</option>
-            <option value="proses"   <?= $filterStatus === 'proses'   ? 'selected' : '' ?>>Proses</option>
-            <option value="selesai"  <?= $filterStatus === 'selesai'  ? 'selected' : '' ?>>Selesai</option>
+    <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1">Status</label>
+        <select name="status" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4455DD]">
+            <option value=""></option>
+            <option value="menunggu" <?= $filterStatus === 'menunggu' ? 'selected' : '' ?>>MENUNGGU</option>
+            <option value="proses"   <?= $filterStatus === 'proses'   ? 'selected' : '' ?>>PROSES</option>
+            <option value="selesai"  <?= $filterStatus === 'selesai'  ? 'selected' : '' ?>>SELESAI</option>
         </select>
     </div>
-    <div class="col-auto">
-        <input type="month" name="bulan" class="form-control" value="<?= htmlspecialchars($filterBulan) ?>">
+    <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1">Bulan</label>
+        <input type="month" name="bulan" value="<?= htmlspecialchars($filterBulan) ?>"
+               class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4455DD]">
     </div>
-    <div class="col-auto">
-        <input type="date" name="tanggal" class="form-control" value="<?= htmlspecialchars($filterTanggal) ?>">
+    <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1">Tanggal</label>
+        <input type="date" name="tanggal" value="<?= htmlspecialchars($filterTanggal) ?>"
+               class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4455DD]">
     </div>
-    <div class="col-auto">
-        <button type="submit" class="btn btn-primary">Filter</button>
-        <a href="<?= BASE_PATH ?>/admin" class="btn btn-secondary">Reset</a>
-    </div>
+    <button type="submit" class="bg-[#4455DD] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition">Filter</button>
+    <a href="<?= BASE_PATH ?>/admin" class="bg-[#EE6666] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition">Reset</a>
 </form>
 
-<table class="table table-bordered table-striped">
-    <thead>
-    <tr class="text-nowrap">
-        <th>No</th>
-        <th>NIS</th>
-        <th>Nama Lengkap</th>
-        <th>Kelas</th>
-        <th>Kategori</th>
-        <th>Lokasi</th>
-        <th>Deskripsi</th>
-        <th>Status</th>
-        <th>Feedback</th>
-        <th>Tanggal</th>
-        <th>Aksi</th>
-    </tr>
-    </thead>
-    <tbody>
-    <?php
-    $no = 1;
-    while ($row = $stmt->fetch()) {
-        echo "<tr>";
-        echo "<td>" . $no++ . "</td>";
-        echo "<td>" . $row['nis'] . "</td>";
-        echo "<td>" . $row['full_name'] . "</td>";
-        echo "<td>" . $row['class'] . "</td>";
-        echo "<td>" . $row['category_name'] . "</td>";
-        echo "<td>" . $row['location'] . "</td>";
-        echo "<td>" . $row['description'] . "</td>";
-        echo "<td>" . $row['status'] . "</td>";
-        echo "<td>" . $row['feedback'] . "</td>";
-        echo "<td>" . date('d-m-Y H:i', strtotime($row['created_at'])) . "</td>";
-        echo "<td>
-                <a href='" . BASE_PATH . "/admin/edit_aspirasi?aspiration_id=" . $row['aspiration_id'] . "' class='btn btn-sm btn-warning'>Edit</a>
-              </td>";
-        echo "</tr>";
-    }
-    ?>
-    </tbody>
-</table>
+<div class="overflow-x-auto">
+    <table class="w-full bg-white rounded-xl shadow text-sm">
+        <thead>
+            <tr class="bg-[#4455DD] text-white">
+                <th class="px-4 py-3 text-left">NO</th>
+                <th class="px-4 py-3 text-left">NIS</th>
+                <th class="px-4 py-3 text-left">NAMA</th>
+                <th class="px-4 py-3 text-left">KELAS</th>
+                <th class="px-4 py-3 text-left">KATEGORI</th>
+                <th class="px-4 py-3 text-left">LOKASI</th>
+                <th class="px-4 py-3 text-left">DESKRIPSI</th>
+                <th class="px-4 py-3 text-left">STATUS</th>
+                <th class="px-4 py-3 text-left">FEEDBACK</th>
+                <th class="px-4 py-3 text-left">TANGGAL</th>
+                <th class="px-4 py-3 text-left">TINDAKAN</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php
+        $no = 1;
+        while ($row = $stmt->fetch()) {
+            $statusClass = match($row['status']) {
+                'menunggu' => 'bg-[#FFDD44] text-gray-800',
+                'proses'   => 'bg-[#33AAEE] text-white',
+                'selesai'  => 'bg-[#BBDD22] text-gray-800',
+                default    => 'bg-gray-200 text-gray-800'
+            };
+            echo "<tr class='border-t border-gray-100 hover:bg-gray-50'>";
+            echo "<td class='px-4 py-3'>" . $no++ . "</td>";
+            echo "<td class='px-4 py-3'>" . $row['nis'] . "</td>";
+            echo "<td class='px-4 py-3'>" . $row['full_name'] . "</td>";
+            echo "<td class='px-4 py-3'>" . $row['class'] . "</td>";
+            echo "<td class='px-4 py-3'>" . $row['category_name'] . "</td>";
+            echo "<td class='px-4 py-3'>" . $row['location'] . "</td>";
+            echo "<td class='px-4 py-3'>" . $row['description'] . "</td>";
+            echo "<td class='px-4 py-3'><span class='px-2 py-1 rounded-full text-xs font-semibold $statusClass'>" . ucfirst($row['status']) . "</span></td>";
+            echo "<td class='px-4 py-3'>" . ($row['feedback'] ?: '-') . "</td>";
+            echo "<td class='px-4 py-3'>" . date('d-m-Y', strtotime($row['created_at'])) . "</td>";
+            echo "<td class='px-4 py-3'>
+                    <a href='" . BASE_PATH . "/admin/edit_aspirasi?aspiration_id=" . $row['aspiration_id'] . "'
+                       class='bg-[#FFDD44] text-gray-800 px-3 py-1 rounded text-xs font-semibold hover:opacity-90 transition'>Edit</a>
+                  </td>";
+            echo "</tr>";
+        }
+        ?>
+        </tbody>
+    </table>
+</div>
