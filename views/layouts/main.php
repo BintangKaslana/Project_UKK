@@ -16,11 +16,11 @@
      alt="Logo Kalimantan Selatan" class="w-11 h-11 rounded-full object-contain bg-white">
         </div>
         <!-- Menu desktop -->
-        <div class="hidden md:flex items-center gap-6">
-            <a href="/ukk_bintang_26/" class="text-white hover:text-[#FFDD44] transition text-sm font-medium">Beranda</a>
-            <a href="/ukk_bintang_26/aspirasi" class="text-white hover:text-[#FFDD44] transition text-sm font-medium">Sampaikan Aspirasi</a>
-            <a href="/ukk_bintang_26/histori" class="text-white hover:text-[#FFDD44] transition text-sm font-medium">Histori Aspirasi</a>
-        </div>
+        <div class="hidden md:flex items-center gap-6 ml-auto">
+    <a href="/ukk_bintang_26/" class="nav-link nav-beranda text-white text-sm font-medium">Beranda</a>
+    <a href="/ukk_bintang_26/aspirasi" class="nav-link nav-aspirasi text-white text-sm font-medium">Sampaikan Aspirasi</a>
+    <a href="/ukk_bintang_26/histori" class="nav-link nav-histori text-white text-sm font-medium">Histori Aspirasi</a>
+</div>
         <!-- Hamburger mobile -->
         <button id="menuBtn" class="md:hidden text-white focus:outline-none">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

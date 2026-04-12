@@ -18,11 +18,11 @@ $sql = "SELECT ia.id, s.nis, s.full_name, s.class, k.category_name, ia.location,
     WHERE 1=1";
 
 $params = [];
-if ($filterKategori !== '') { $sql .= " AND k.id = ?"; $params[] = $filterKategori; }
-if ($filterNis !== '')      { $sql .= " AND s.nis = ?"; $params[] = $filterNis; }
+if ($filterKategori !== '') { $sql .= " AND k.id = ?";                              $params[] = $filterKategori; }
+if ($filterNis !== '')      { $sql .= " AND s.nis = ?";                              $params[] = $filterNis; }
 if ($filterBulan !== '')    { $sql .= " AND TO_CHAR(ia.created_at, 'YYYY-MM') = ?"; $params[] = $filterBulan; }
-if ($filterTanggal !== '')  { $sql .= " AND DATE(ia.created_at) = ?"; $params[] = $filterTanggal; }
-if ($filterStatus !== '')   { $sql .= " AND a.status = ?"; $params[] = $filterStatus; }
+if ($filterTanggal !== '')  { $sql .= " AND DATE(ia.created_at) = ?";               $params[] = $filterTanggal; }
+if ($filterStatus !== '')   { $sql .= " AND a.status = ?";                           $params[] = $filterStatus; }
 $sql .= " ORDER BY ia.id DESC";
 
 $stmt = $conn->prepare($sql);
@@ -44,7 +44,7 @@ $stmt->execute($params);
             $kStmt = $conn->query("SELECT id, category_name FROM kategori ORDER BY id");
             foreach ($kStmt->fetchAll() as $k) {
                 $selected = $filterKategori == $k['id'] ? 'selected' : '';
-                echo "<option value='{$k['id']}' $selected>{$k['category_name']}</option>";
+                echo "<option value='" . htmlspecialchars($k['id']) . "' $selected>" . htmlspecialchars($k['category_name']) . "</option>";
             }
             ?>
         </select>
@@ -104,19 +104,19 @@ $stmt->execute($params);
                 'selesai'  => 'bg-[#BBDD22] text-gray-800',
                 default    => 'bg-gray-200 text-gray-800'
             };
-            echo "<tr class='border-t border-gray-100 hover:bg-gray-50'>";
+            echo "<tr class='border-t border-yellow-green-100 hover:bg-gray-50'>";
             echo "<td class='px-4 py-3'>" . $no++ . "</td>";
-            echo "<td class='px-4 py-3'>" . $row['nis'] . "</td>";
-            echo "<td class='px-4 py-3'>" . $row['full_name'] . "</td>";
-            echo "<td class='px-4 py-3'>" . $row['class'] . "</td>";
-            echo "<td class='px-4 py-3'>" . $row['category_name'] . "</td>";
-            echo "<td class='px-4 py-3'>" . $row['location'] . "</td>";
-            echo "<td class='px-4 py-3'>" . $row['description'] . "</td>";
-            echo "<td class='px-4 py-3'><span class='px-2 py-1 rounded-full text-xs font-semibold $statusClass'>" . ucfirst($row['status']) . "</span></td>";
-            echo "<td class='px-4 py-3'>" . ($row['feedback'] ?: '-') . "</td>";
+            echo "<td class='px-4 py-3'>" . htmlspecialchars($row['nis']) . "</td>";
+            echo "<td class='px-4 py-3'>" . htmlspecialchars($row['full_name']) . "</td>";
+            echo "<td class='px-4 py-3'>" . htmlspecialchars($row['class']) . "</td>";
+            echo "<td class='px-4 py-3'>" . htmlspecialchars($row['category_name']) . "</td>";
+            echo "<td class='px-4 py-3'>" . htmlspecialchars($row['location']) . "</td>";
+            echo "<td class='px-4 py-3'>" . htmlspecialchars($row['description']) . "</td>";
+            echo "<td class='px-4 py-3'><span class='px-2 py-1 rounded-full text-xs font-semibold $statusClass'>" . ucfirst(htmlspecialchars($row['status'])) . "</span></td>";
+            echo "<td class='px-4 py-3'>" . htmlspecialchars($row['feedback'] ?: '-') . "</td>";
             echo "<td class='px-4 py-3'>" . date('d-m-Y', strtotime($row['created_at'])) . "</td>";
             echo "<td class='px-4 py-3'>
-                    <a href='" . BASE_PATH . "/admin/edit_aspirasi?aspiration_id=" . $row['aspiration_id'] . "'
+                    <a href='" . BASE_PATH . "/admin/edit_aspirasi?aspiration_id=" . intval($row['aspiration_id']) . "'
                        class='bg-[#FFDD44] text-gray-800 px-3 py-1 rounded text-xs font-semibold hover:opacity-90 transition'>Edit</a>
                   </td>";
             echo "</tr>";

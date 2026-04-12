@@ -32,7 +32,8 @@ $queries = [
         nis         INTEGER      NOT NULL REFERENCES siswa(nis)     ON DELETE CASCADE,
         category_id INTEGER      NOT NULL REFERENCES kategori(id)   ON DELETE CASCADE,
         location    VARCHAR(100) NOT NULL,
-        description TEXT         NOT NULL
+        description TEXT         NOT NULL,
+        created_at  TIMESTAMP    NOT NULL DEFAULT NOW()
     )",
 
     "CREATE TABLE IF NOT EXISTS aspirasi (

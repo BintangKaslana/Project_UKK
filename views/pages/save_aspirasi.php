@@ -1,12 +1,30 @@
 <?php
 require_once dirname(__DIR__, 2) . '/app/bootstrap.php';
 
-$nis         = trim($_POST['nis']);
-$fullname    = trim($_POST['full_name']);
-$class       = trim($_POST['class']);
-$categoryId  = trim($_POST['category']);
-$location    = trim($_POST['location']);
-$description = trim($_POST['description']);
+// Validasi method POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: ' . BASE_PATH . '/aspirasi');
+    exit();
+}
+
+$nis         = trim($_POST['nis'] ?? '');
+$fullname    = trim($_POST['full_name'] ?? '');
+$class       = trim($_POST['class'] ?? '');
+$categoryId  = trim($_POST['category'] ?? '');
+$location    = trim($_POST['location'] ?? '');
+$description = trim($_POST['description'] ?? '');
+
+// Validasi field tidak boleh kosong
+if (empty($nis) || empty($fullname) || empty($class) || empty($categoryId) || empty($location) || empty($description)) {
+    header('Location: ' . BASE_PATH . '/aspirasi?message=error');
+    exit();
+}
+
+// Validasi tipe data numerik
+if (!is_numeric($nis) || !is_numeric($categoryId)) {
+    header('Location: ' . BASE_PATH . '/aspirasi?message=error');
+    exit();
+}
 
 // Upsert siswa (PostgreSQL syntax)
 $sqlSiswa = "INSERT INTO siswa (nis, full_name, class) VALUES (?, ?, ?)

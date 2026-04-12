@@ -1,8 +1,34 @@
 <?php
 require_once dirname(__DIR__, 2) . '/app/bootstrap.php';
-$aspiration_id = intval($_POST['aspiration_id']);
-$status        = trim($_POST['status']);
-$feedback      = trim($_POST['feedback']);
+
+// Validasi session admin
+if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
+    header('Location: ' . BASE_PATH . '/admin/login');
+    exit();
+}
+
+// Validasi method POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: ' . BASE_PATH . '/admin');
+    exit();
+}
+
+$aspiration_id = intval($_POST['aspiration_id'] ?? 0);
+$status        = trim($_POST['status'] ?? '');
+$feedback      = trim($_POST['feedback'] ?? '');
+
+// Validasi aspiration_id
+if ($aspiration_id <= 0) {
+    header('Location: ' . BASE_PATH . '/admin');
+    exit();
+}
+
+// Validasi nilai status — hanya boleh nilai yang diizinkan
+$allowedStatus = ['menunggu', 'proses', 'selesai'];
+if (!in_array($status, $allowedStatus)) {
+    header('Location: ' . BASE_PATH . '/admin');
+    exit();
+}
 
 $stmt = $conn->prepare("UPDATE aspirasi SET status = ?, feedback = ? WHERE aspiration_id = ?");
 if ($stmt->execute([$status, $feedback, $aspiration_id])) {

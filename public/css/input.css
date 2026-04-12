@@ -1,51 +1,77 @@
-@import "tailwindcss";
+    @import "tailwindcss";
 
-@theme {
-    --color-royal-blue: #4455DD;
-    --color-sky-blue: #33AAEE;
-    --color-yellow: #FFDD44;
-    --color-poppy-red: #EE6666;
-    --color-yellow-green: #BBDD22;
-}
-
-@layer utilities {
-    .isolation-auto {
-        isolation: auto;
+    @theme {
+        --color-royal-blue: #4455DD;
+        --color-sky-blue: #33AAEE;
+        --color-yellow: #FFDD44;
+        --color-poppy-red: #EE6666;
+        --color-yellow-green: #BBDD22;
     }
 
-    .before\:w-full::before { width: 100%; }
-    .before\:-left-full::before { left: -100%; }
-    .before\:hover\:w-full:hover::before { width: 100%; }
-    .before\:hover\:left-0:hover::before { left: 0; }
-    .before\:rounded-full::before { border-radius: 9999px; }
-    .before\:bg-\[\#33AAEE\]::before { background-color: #33AAEE; }
-    .before\:-z-10::before { z-index: -10; }
-    .before\:aspect-square::before { aspect-ratio: 1/1; }
-    .before\:absolute::before { position: absolute; }
-    .before\:transition-all::before { transition: all; }
-    .before\:duration-700::before { transition-duration: 700ms; }
-    .before\:hover\:scale-150:hover::before { transform: scale(1.5); }
-    .before\:hover\:duration-700:hover::before { transition-duration: 700ms; }
-}
+    @layer utilities {
+        .isolation-auto {
+            isolation: auto;
+        }
 
-a.group::before,
-button.group::before {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 100%;
-    top: 0;
-    left: -100%;
-    border-radius: 9999px;
-    background-color: #33AAEE;
-    z-index: -10;
-    transition: all 700ms;
-    aspect-ratio: 1/1;
-}
+        .before\:w-full::before { width: 100%; }
+        .before\:-left-full::before { left: -100%; }
+        .before\:hover\:w-full:hover::before { width: 100%; }
+        .before\:hover\:left-0:hover::before { left: 0; }
+        .before\:rounded-full::before { border-radius: 9999px; }
+        .before\:bg-\[\#33AAEE\]::before { background-color: #33AAEE; }
+        .before\:-z-10::before { z-index: -10; }
+        .before\:aspect-square::before { aspect-ratio: 1/1; }
+        .before\:absolute::before { position: absolute; }
+        .before\:transition-all::before { transition: all; }
+        .before\:duration-700::before { transition-duration: 700ms; }
+        .before\:hover\:scale-150:hover::before { transform: scale(1.5); }
+        .before\:hover\:duration-700:hover::before { transition-duration: 700ms; }
+    }
 
-a.group:hover::before,
-button.group:hover::before {
-    width: 100%;
-    left: 0;
-    transform: scale(1.5);
-}
+    a.group::before,
+    button.group::before {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 100%;
+        top: 0;
+        left: -100%;
+        border-radius: 9999px;
+        background-color: #33AAEE;
+        z-index: -10;
+        transition: all 700ms;
+        aspect-ratio: 1/1;
+    }
+
+    a.group:hover::before,
+    button.group:hover::before {
+        width: 100%;
+        left: 0;
+        transform: scale(1.5);
+    }
+    .nav-link {
+        position: relative;
+        padding: 4px 2px;
+    }
+
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 0;
+        transition: width 300ms ease;
+    }
+
+    .nav-link:hover::after {
+        width: 100%;
+    }
+
+    .nav-beranda::after { background-color: #FFDD44; }
+    .nav-aspirasi::after { background-color: #EE6666; }
+    .nav-histori::after { background-color: #BBDD22; }
+
+    .nav-beranda:hover { color: #FFDD44 !important; }
+    .nav-aspirasi:hover { color: #EE6666 !important; }
+    .nav-histori:hover { color: #BBDD22 !important; }

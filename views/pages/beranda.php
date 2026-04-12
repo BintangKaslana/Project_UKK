@@ -1,12 +1,12 @@
-<section class="min-h-screen bg-[#4455DD] flex items-center overflow-hidden -mt-10">
+<section class="min-h-screen bg-[#4455DD] flex items-center overflow-hidden -mt-8">
     <div class="max-w-6xl mx-auto px-8 w-full py-4">
         <div class="flex flex-col md:flex-row items-center justify-between gap-12">
             <div class="max-w-lg text-center md:text-left">
-                <p class="text-[#FFDD44] text-sm font-bold tracking-widest uppercase mb-3">✦ Aplikasi Pengaduan Sarana Sekolah</p>
+                <p class="text-[#FFDD44] text- font-bold tracking-widest uppercase mb-3">✦ Aduan Aspirasi Sarana dan Prasarana Sekolah</p>
                 <h1 class="text-white font-bold text-3xl md:text-5xl leading-tight mb-4">
                     Selamat Datang di<br>
-                    <span class="text-[#FFDD44]">Aplikasi Pengaduan</span><br>
-                    Sarana Sekolah
+                    <span class="text-[#FFDD44] tracking-widest">SIADUARSIP </span><br>
+                    Sistem Aduan Aspirasi Pelajar
                 </h1>
                 <p class="text-white/90 text-base md:text-lg mb-8 max-w-lg mx-auto md:mx-0">
                     Sampaikan aspirasi dan pengaduanmu terkait sarana dan prasarana sekolah. 
