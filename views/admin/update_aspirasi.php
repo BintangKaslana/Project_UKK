@@ -30,6 +30,8 @@ if (!in_array($status, $allowedStatus)) {
     exit();
 }
 
+/* This block of code is preparing and executing a SQL query to update the status and feedback fields
+in the "aspirasi" table in the database. */
 $stmt = $conn->prepare("UPDATE aspirasi SET status = ?, feedback = ? WHERE aspiration_id = ?");
 if ($stmt->execute([$status, $feedback, $aspiration_id])) {
     header('Location: ' . BASE_PATH . '/admin?message=updated');

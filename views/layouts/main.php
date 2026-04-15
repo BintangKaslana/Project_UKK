@@ -6,7 +6,7 @@
     <title>Aplikasi Pengaduan Sarana Sekolah</title>
     <link rel="stylesheet" href="/ukk_bintang_26/public/css/style.css">
 </head>
-<body class="bg-gray-50 overflow-hidden h-screen">
+<body class="bg-gray-50  h-screen">
 <nav class="bg-[#4455DD] shadow-md relative z-50 sticky top-0">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <div class="flex items-center gap-3">

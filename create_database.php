@@ -33,6 +33,7 @@ $queries = [
         category_id INTEGER      NOT NULL REFERENCES kategori(id)   ON DELETE CASCADE,
         location    VARCHAR(100) NOT NULL,
         description TEXT         NOT NULL,
+        bukti_foto  VARCHAR(255) DEFAULT NULL,
         created_at  TIMESTAMP    NOT NULL DEFAULT NOW()
     )",
 

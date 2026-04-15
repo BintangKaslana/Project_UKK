@@ -26,16 +26,71 @@ if (!is_numeric($nis) || !is_numeric($categoryId)) {
     exit();
 }
 
-// Upsert siswa (PostgreSQL syntax)
-$sqlSiswa = "INSERT INTO siswa (nis, full_name, class) VALUES (?, ?, ?)
-             ON CONFLICT (nis) DO UPDATE SET full_name = EXCLUDED.full_name, class = EXCLUDED.class";
-$stmt = $conn->prepare($sqlSiswa);
-$stmt->execute([$nis, $fullname, $class]);
+// Handle upload foto bukti (opsional)
+$bukti_foto = null;
+if (!empty($_FILES['bukti_foto']['name'])) {
+    $file     = $_FILES['bukti_foto'];
+    $maxSize  = 2 * 1024 * 1024; // 2MB
+    $allowed  = ['image/jpeg', 'image/png', 'image/webp'];
 
-// Insert input_aspirasi, ambil id yang baru dibuat
-$sqlAspirasi = "INSERT INTO input_aspirasi (nis, category_id, location, description) VALUES (?, ?, ?, ?) RETURNING id";
+    // Validasi ukuran & tipe MIME
+    $finfo    = finfo_open(FILEINFO_MIME_TYPE);
+    $mimeType = finfo_file($finfo, $file['tmp_name']);
+    finfo_close($finfo);
+
+    if ($file['size'] > $maxSize || !in_array($mimeType, $allowed)) {
+        header('Location: ' . BASE_PATH . '/aspirasi?message=foto_error');
+        exit();
+    }
+
+    // Simpan ke folder uploads/bukti/
+    $uploadDir = dirname(__DIR__, 2) . '/public/uploads/bukti/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+
+    $ext        = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $namaFile   = 'bukti_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+    $targetPath = $uploadDir . $namaFile;
+
+    if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+        header('Location: ' . BASE_PATH . '/aspirasi?message=error');
+        exit();
+    }
+
+    $bukti_foto = $namaFile;
+}
+
+// Cek apakah NIS sudah terdaftar
+$stmtCek = $conn->prepare("SELECT nis, full_name, class FROM siswa WHERE nis = ?");
+$stmtCek->execute([$nis]);
+$siswaTerdaftar = $stmtCek->fetch();
+
+if ($siswaTerdaftar) {
+    // NIS sudah ada — pastikan nama & kelas cocok, jangan izinkan overwrite
+    $namaDb     = strtolower(trim($siswaTerdaftar['full_name']));
+    $namaInput  = strtolower(trim($fullname));
+    $kelasDb    = strtolower(trim($siswaTerdaftar['class']));
+    $kelasInput = strtolower(trim($class));
+
+    if ($namaDb !== $namaInput || $kelasDb !== $kelasInput) {
+        // NIS sudah dimiliki siswa lain, tolak
+        header('Location: ' . BASE_PATH . '/aspirasi?message=nis_conflict&nis=' . urlencode($nis));
+        exit();
+    }
+    // NIS & nama cocok — tidak perlu insert ulang, lanjut saja
+} else {
+    // NIS belum ada — insert siswa baru
+    $sqlSiswa = "INSERT INTO siswa (nis, full_name, class) VALUES (?, ?, ?)";
+    $stmt = $conn->prepare($sqlSiswa);
+    $stmt->execute([$nis, $fullname, $class]);
+}
+
+// Insert input_aspirasi dengan kolom bukti_foto
+$sqlAspirasi = "INSERT INTO input_aspirasi (nis, category_id, location, description, bukti_foto)
+                VALUES (?, ?, ?, ?, ?) RETURNING id";
 $stmt = $conn->prepare($sqlAspirasi);
-$stmt->execute([$nis, $categoryId, $location, $description]);
+$stmt->execute([$nis, $categoryId, $location, $description, $bukti_foto]);
 $row = $stmt->fetch();
 $aspiration_id = $row['id'];
 
