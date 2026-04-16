@@ -30,6 +30,12 @@ if (($_SESSION['admin_role'] ?? '') !== 'head_admin') {
 <?php if (isset($_GET['message']) && $_GET['message'] === 'deleted'): ?>
     <div class="bg-[#EE6666] text-white px-4 py-3 rounded-lg mb-4 text-sm font-semibold">🗑️ Admin berhasil dihapus.</div>
 <?php endif; ?>
+<?php if (isset($_GET['error']) && $_GET['error'] === 'self'): ?>
+    <div class="bg-[#FFDD44] text-gray-800 px-4 py-3 rounded-lg mb-4 text-sm font-semibold">⚠️ Kamu tidak bisa menghapus akunmu sendiri.</div>
+<?php endif; ?>
+<?php if (isset($_GET['error']) && $_GET['error'] === 'last_head'): ?>
+    <div class="bg-[#FFDD44] text-gray-800 px-4 py-3 rounded-lg mb-4 text-sm font-semibold">⚠️ Tidak bisa menghapus Head Admin terakhir. Pastikan ada Head Admin lain sebelum menghapus.</div>
+<?php endif; ?>
 
 <div class="overflow-x-auto">
     <table class="w-full bg-white rounded-xl shadow text-sm">

@@ -14,4 +14,10 @@ return [
     '/admin/update_aspirasi' => VIEW_PATH . '/admin/update_aspirasi.php',
     '/admin/delete_aspirasi' => VIEW_PATH . '/admin/delete_aspirasi.php',
     '/admin/review_aspirasi' => VIEW_PATH . '/admin/review_aspirasi.php',
+    // Kelola Kategori (Fitur 3)
+    '/admin/manage_kategori' => VIEW_PATH . '/admin/manage_kategori.php',
+    '/admin/save_kategori'   => VIEW_PATH . '/admin/save_kategori.php',
+    '/admin/edit_kategori'   => VIEW_PATH . '/admin/edit_kategori.php',
+    '/admin/update_kategori' => VIEW_PATH . '/admin/update_kategori.php',
+    '/admin/delete_kategori' => VIEW_PATH . '/admin/delete_kategori.php',
 ];

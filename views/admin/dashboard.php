@@ -6,21 +6,25 @@ if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
 $isHeadAdmin = (($_SESSION['admin_role'] ?? '') === 'head_admin');
 
 $filterKategori = isset($_GET['kategori']) ? trim($_GET['kategori']) : '';
-$filterNis      = isset($_GET['nis']) ? trim($_GET['nis']) : '';
-$filterBulan    = isset($_GET['bulan']) ? trim($_GET['bulan']) : '';
-$filterTanggal  = isset($_GET['tanggal']) ? trim($_GET['tanggal']) : '';
-$filterStatus   = isset($_GET['status']) ? trim($_GET['status']) : '';
+$filterNis      = isset($_GET['nis'])      ? trim($_GET['nis'])      : '';
+$filterBulan    = isset($_GET['bulan'])    ? trim($_GET['bulan'])    : '';
+$filterTanggal  = isset($_GET['tanggal']) ? trim($_GET['tanggal'])  : '';
+$filterStatus   = isset($_GET['status'])  ? trim($_GET['status'])   : '';
 
 // Hitung aspirasi pending review untuk badge notifikasi
-$stmtPending = $conn->query("SELECT COUNT(*) AS total FROM aspirasi WHERE review_status = 'pending'");
+$stmtPending  = $conn->query("SELECT COUNT(*) AS total FROM aspirasi WHERE review_status = 'pending'");
 $pendingCount = (int)$stmtPending->fetch()['total'];
 
-$sql = "SELECT ia.id, s.nis, s.full_name, s.class, k.category_name, ia.location, ia.description, ia.bukti_foto, a.aspiration_id, a.status, a.review_status, a.is_anonim, a.feedback, ia.created_at
-    FROM input_aspirasi ia
-    JOIN siswa s ON ia.nis = s.nis
-    JOIN kategori k ON ia.category_id = k.id
-    JOIN aspirasi a ON ia.id = a.aspiration_id
-    WHERE 1=1";
+$sql = "SELECT ia.id, s.nis, s.full_name, s.class, k.category_name, ia.location, ia.description,
+               ia.bukti_foto, a.aspiration_id, a.status, a.review_status, a.is_anonim,
+               a.feedback, a.feedback_by, adm.full_name AS fb_admin_name, adm.username AS fb_admin_user, adm.role AS fb_admin_role,
+               ia.created_at
+        FROM input_aspirasi ia
+        JOIN siswa s    ON ia.nis         = s.nis
+        JOIN kategori k ON ia.category_id = k.id
+        JOIN aspirasi a ON ia.id          = a.aspiration_id
+        LEFT JOIN admin adm ON a.feedback_by = adm.id
+        WHERE 1=1";
 
 $params = [];
 if ($filterKategori !== '') { $sql .= " AND k.id = ?";                              $params[] = $filterKategori; }
@@ -32,21 +36,18 @@ $sql .= " ORDER BY ia.id DESC";
 
 $stmt = $conn->prepare($sql);
 $stmt->execute($params);
+$rows = $stmt->fetchAll();
 ?>
 
-<?php if (isset($_GET['message']) && $_GET['message'] === 'updated') { ?>
-    <div class="bg-[#BBDD22] text-gray-800 px-4 py-3 rounded-lg mb-4">Aspirasi berhasil diperbarui.</div>
-<?php } ?>
-
-<?php if (isset($_GET['message']) && $_GET['message'] === 'deleted') { ?>
-    <div class="bg-[#EE6666] text-white px-4 py-3 rounded-lg mb-4">Aspirasi berhasil dihapus.</div>
-<?php } ?>
-
-<?php if (isset($_GET['error']) && $_GET['error'] === 'akses') { ?>
-    <div class="bg-[#FFDD44] text-gray-800 px-4 py-3 rounded-lg mb-4 text-sm font-semibold">
-        ⚠️ Akses ditolak. Fitur ini hanya tersedia untuk Head Admin.
-    </div>
-<?php } ?>
+<?php if (isset($_GET['message']) && $_GET['message'] === 'updated'): ?>
+    <div class="bg-[#BBDD22] text-gray-800 px-4 py-3 rounded-lg mb-4 text-sm font-semibold">✅ Aspirasi berhasil diperbarui.</div>
+<?php endif; ?>
+<?php if (isset($_GET['message']) && $_GET['message'] === 'deleted'): ?>
+    <div class="bg-[#EE6666] text-white px-4 py-3 rounded-lg mb-4 text-sm font-semibold">🗑️ Aspirasi berhasil dihapus.</div>
+<?php endif; ?>
+<?php if (isset($_GET['error']) && $_GET['error'] === 'akses'): ?>
+    <div class="bg-[#FFDD44] text-gray-800 px-4 py-3 rounded-lg mb-4 text-sm font-semibold">⚠️ Akses ditolak. Fitur ini hanya tersedia untuk Head Admin.</div>
+<?php endif; ?>
 
 <h2 class="text-2xl font-bold text-[#4455DD] mb-4">Daftar Aspirasi Siswa</h2>
 
@@ -58,6 +59,7 @@ $stmt->execute($params);
 </a>
 <?php endif; ?>
 
+<!-- Filter -->
 <form method="get" class="bg-white rounded-xl shadow p-4 mb-6 flex flex-wrap gap-3 items-end">
     <div>
         <label class="block text-xs font-semibold text-gray-600 mb-1">Kategori</label>
@@ -100,32 +102,167 @@ $stmt->execute($params);
     <a href="<?= BASE_PATH ?>/admin" class="bg-[#EE6666] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition">Reset</a>
 </form>
 
+<!-- Tabel Aspirasi -->
 <div class="overflow-x-auto">
     <table class="w-full bg-white rounded-xl shadow text-sm">
         <thead>
-            <tr class="bg-[#4455DD] text-white">
-                <th class="px-4 py-3 text-left">NO</th>
-                <th class="px-4 py-3 text-left">NIS</th>
-                <th class="px-4 py-3 text-left">NAMA</th>
-                <th class="px-4 py-3 text-left">KELAS</th>
-                <th class="px-4 py-3 text-left">KATEGORI</th>
-                <th class="px-4 py-3 text-left">LOKASI</th>
-                <th class="px-4 py-3 text-left">DESKRIPSI</th>
-                <th class="px-4 py-3 text-left">STATUS</th>
-                <th class="px-4 py-3 text-left">REVIEW</th>
-                <th class="px-4 py-3 text-left">FOTO</th>
-                <th class="px-4 py-3 text-left">FEEDBACK</th>
-                <th class="px-4 py-3 text-left">TANGGAL</th>
-                <th class="px-4 py-3 text-left">TINDAKAN</th>
+            <tr class="bg-[#4455DD] text-white text-xs">
+                <th class="px-3 py-3 text-left">NO</th>
+                <th class="px-3 py-3 text-left">NIS</th>
+                <th class="px-3 py-3 text-left">NAMA</th>
+                <th class="px-3 py-3 text-left">KELAS</th>
+                <th class="px-3 py-3 text-left">KATEGORI</th>
+                <th class="px-3 py-3 text-left">LOKASI</th>
+                <th class="px-3 py-3 text-left">DESKRIPSI</th>
+                <th class="px-3 py-3 text-left">STATUS</th>
+                <th class="px-3 py-3 text-left">REVIEW</th>
+                <th class="px-3 py-3 text-left">FOTO</th>
+                <th class="px-3 py-3 text-left">FEEDBACK</th>
+                <th class="px-3 py-3 text-left">TANGGAL</th>
+                <th class="px-3 py-3 text-left">TINDAKAN</th>
             </tr>
         </thead>
-        </tbody>
-        </table>
-    </div>
-</div>
+        <tbody>
+        <?php
+        $no = 1;
+        foreach ($rows as $row):
+            $statusClass = match($row['status']) {
+                'menunggu' => 'bg-[#FFDD44] text-gray-800',
+                'proses'   => 'bg-[#33AAEE] text-white',
+                'selesai'  => 'bg-[#BBDD22] text-gray-800',
+                default    => 'bg-gray-200 text-gray-800'
+            };
+            $reviewClass = match($row['review_status']) {
+                'pending'  => 'bg-[#FFDD44] text-gray-800',
+                'approved' => 'bg-[#BBDD22] text-gray-800',
+                'rejected' => 'bg-[#EE6666] text-white',
+                default    => 'bg-gray-200 text-gray-800'
+            };
+            $reviewLabel = match($row['review_status']) {
+                'pending'  => 'Pending',
+                'approved' => 'Disetujui',
+                'rejected' => 'Ditolak',
+                default    => '-'
+            };
 
-<!-- Modals dashboard aspirasi -->
-<div id="dashboard-modals"></div>
+            $dashModalId = 'dashmodal-' . intval($row['aspiration_id']);
+
+            // Truncate deskripsi
+            $descFull = htmlspecialchars($row['description']);
+            $descNeed = mb_strlen($row['description']) > 60;
+            $descDisp = $descNeed ? htmlspecialchars(mb_substr($row['description'], 0, 60)) . '...' : $descFull;
+
+            // Truncate & info feedback
+            $feedRaw  = $row['feedback'] ?? '';
+            $feedFull = htmlspecialchars($feedRaw ?: '-');
+            $feedNeed = mb_strlen($feedRaw) > 60;
+            $feedDisp = $feedNeed ? htmlspecialchars(mb_substr($feedRaw, 0, 60)) . '...' : $feedFull;
+
+            // Info admin yang balas
+            $fbAdminHtml = '';
+            if (!empty($row['feedback_by'])) {
+                $fbName  = htmlspecialchars($row['fb_admin_name'] ?: $row['fb_admin_user'] ?: 'Admin');
+                $fbRole  = $row['fb_admin_role'] === 'head_admin' ? 'Head Admin' : 'Admin';
+                $fbBadge = $row['fb_admin_role'] === 'head_admin'
+                    ? "<span class='bg-[#FFDD44] text-gray-800 text-[10px] font-bold px-1.5 py-0.5 rounded'>Head Admin</span>"
+                    : "<span class='bg-gray-100 text-gray-600 text-[10px] font-semibold px-1.5 py-0.5 rounded'>Admin</span>";
+                $fbAdminHtml = "<p class='text-xs text-[#4455DD] font-semibold mt-2'>👤 Oleh: $fbName $fbBadge</p>";
+            }
+
+            $anonimTag = $row['is_anonim']
+                ? "<span class='ml-1 text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded'>Anonim</span>"
+                : '';
+        ?>
+        <tr class="border-t border-gray-100 hover:bg-gray-50">
+            <td class="px-3 py-2"><?= $no++ ?></td>
+            <td class="px-3 py-2"><?= htmlspecialchars($row['nis']) ?></td>
+            <td class="px-3 py-2"><?= htmlspecialchars($row['full_name']) ?></td>
+            <td class="px-3 py-2"><?= htmlspecialchars($row['class']) ?></td>
+            <td class="px-3 py-2"><?= htmlspecialchars($row['category_name']) ?></td>
+            <td class="px-3 py-2"><?= htmlspecialchars($row['location']) ?></td>
+            <!-- Deskripsi truncate -->
+            <td class="px-3 py-2" style="max-width:150px">
+                <p class="text-xs text-gray-800" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;"><?= $descFull ?></p>
+                <?php if ($descNeed): ?>
+                    <button onclick="openDashModal('<?= $dashModalId ?>')" class="text-[#4455DD] text-xs hover:underline whitespace-nowrap">Lihat selengkapnya</button>
+                <?php endif; ?>
+            </td>
+            <td class="px-3 py-2">
+                <span class="px-2 py-1 rounded-full text-xs font-semibold <?= $statusClass ?>"><?= ucfirst($row['status']) ?></span>
+            </td>
+            <td class="px-3 py-2">
+                <span class="px-2 py-1 rounded-full text-xs font-semibold <?= $reviewClass ?>"><?= $reviewLabel ?></span>
+                <?= $anonimTag ?>
+            </td>
+            <!-- Foto -->
+            <td class="px-3 py-2">
+                <?php if (!empty($row['bukti_foto'])): ?>
+                    <?php $fotoUrl = BASE_PATH . '/public/uploads/bukti/' . htmlspecialchars($row['bukti_foto']); ?>
+                    <a href="<?= $fotoUrl ?>" target="_blank">
+                        <img src="<?= $fotoUrl ?>" alt="Bukti" class="w-12 h-12 object-contain rounded border border-gray-200 hover:opacity-80 transition">
+                    </a>
+                <?php else: ?>
+                    <span class="text-gray-400 text-xs">-</span>
+                <?php endif; ?>
+            </td>
+            <!-- Feedback truncate + info admin -->
+            <td class="px-3 py-2" style="max-width:160px">
+                <p class="text-xs text-gray-800" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;"><?= $feedDisp ?></p>
+                <?php if (!empty($row['feedback_by'])): ?>
+                    <?php
+                    $fbName2  = htmlspecialchars($row['fb_admin_name'] ?: $row['fb_admin_user'] ?: 'Admin');
+                    $fbRole2  = $row['fb_admin_role'] === 'head_admin' ? 'Head Admin' : 'Admin';
+                    ?>
+                    <p class="text-[10px] text-[#4455DD] font-medium mt-0.5">👤 <?= $fbName2 ?> <span class="text-gray-400">(<?= $fbRole2 ?>)</span></p>
+                <?php endif; ?>
+                <?php if ($feedNeed): ?>
+                    <button onclick="openDashModal('<?= $dashModalId ?>')" class="text-[#4455DD] text-xs hover:underline whitespace-nowrap">Lihat selengkapnya</button>
+                <?php endif; ?>
+            </td>
+            <td class="px-3 py-2 whitespace-nowrap"><?= date('d-m-Y', strtotime($row['created_at'])) ?></td>
+            <!-- Tindakan -->
+            <td class="px-3 py-2 whitespace-nowrap">
+                <a href="<?= BASE_PATH ?>/admin/edit_aspirasi?aspiration_id=<?= intval($row['aspiration_id']) ?>"
+                   class="bg-[#FFDD44] text-gray-800 px-3 py-1 rounded text-xs font-semibold hover:opacity-90 transition">Edit</a>
+                <?php if ($isHeadAdmin): ?>
+                <a href="<?= BASE_PATH ?>/admin/delete_aspirasi?aspiration_id=<?= intval($row['aspiration_id']) ?>"
+                   onclick="return confirm('Yakin hapus aspirasi ini? Data tidak bisa dikembalikan.')"
+                   class="bg-[#EE6666] text-white px-3 py-1 rounded text-xs font-semibold hover:opacity-90 transition ml-1">Hapus</a>
+                <?php endif; ?>
+            </td>
+        </tr>
+
+        <!-- Modal detail aspirasi (per baris) -->
+        <div id="<?= $dashModalId ?>" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 px-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full p-6 relative" style="max-width:520px;max-height:85vh;overflow-y:auto;">
+                <button onclick="closeDashModal('<?= $dashModalId ?>')" class="absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold leading-none">&times;</button>
+                <h3 class="text-[#4455DD] font-bold text-base mb-1">Detail Aspirasi</h3>
+                <p class="text-xs text-gray-400 mb-4">
+                    <?= htmlspecialchars($row['category_name']) ?> &bull;
+                    <?= htmlspecialchars($row['location']) ?> &bull;
+                    <?= date('d M Y', strtotime($row['created_at'])) ?>
+                </p>
+                <div class="mb-4 bg-gray-50 rounded-lg p-3">
+                    <p class="text-xs font-semibold text-gray-500 uppercase mb-2">Deskripsi Lengkap</p>
+                    <p class="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap"><?= $descFull ?></p>
+                </div>
+                <div class="bg-blue-50 rounded-lg p-3">
+                    <p class="text-xs font-semibold text-gray-500 uppercase mb-2">Feedback Admin</p>
+                    <p class="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap"><?= $feedFull ?></p>
+                    <?= $fbAdminHtml ?>
+                </div>
+            </div>
+        </div>
+        <?php endforeach; ?>
+
+        <?php if (count($rows) === 0): ?>
+        <tr>
+            <td colspan="13" class="px-4 py-8 text-center text-gray-400">Tidak ada data aspirasi.</td>
+        </tr>
+        <?php endif; ?>
+        </tbody>
+    </table>
+</div>
 
 <script>
 function openDashModal(id) {
@@ -142,84 +279,3 @@ document.addEventListener('click', function(e) {
     });
 });
 </script>
-
-<!-- TIDAK DIGUNAKAN, placeholder agar edit file bisa bekerja -->
-<table class="hidden"><tbody>
-        <?php
-        $no = 1;
-        $modalHtml = '';
-        while ($row = $stmt->fetch()) {
-            $statusClass = match($row['status']) {
-                'menunggu' => 'bg-[#FFDD44] text-gray-800',
-                'proses'   => 'bg-[#33AAEE] text-white',
-                'selesai'  => 'bg-[#BBDD22] text-gray-800',
-                default    => 'bg-gray-200 text-gray-800'
-            };
-
-            $dashModalId = 'dashmodal-' . intval($row['aspiration_id']);
-
-            // Truncate deskripsi
-            $descFull  = htmlspecialchars($row['description']);
-            $descShort = mb_strlen($row['description']) > 60
-                         ? htmlspecialchars(mb_substr($row['description'], 0, 60)) . '...'
-                         : $descFull;
-            $descNeed  = mb_strlen($row['description']) > 60;
-
-            // Truncate feedback
-            $feedRaw   = $row['feedback'] ?: '';
-            $feedFull  = htmlspecialchars($feedRaw ?: '-');
-            $feedShort = mb_strlen($feedRaw) > 60
-                         ? htmlspecialchars(mb_substr($feedRaw, 0, 60)) . '...'
-                         : $feedFull;
-            $feedNeed  = mb_strlen($feedRaw) > 60;
-
-            echo "<tr class='border-t border-gray-100 hover:bg-gray-50'>";
-            echo "<td class='px-4 py-3'>" . $no++ . "</td>";
-            echo "<td class='px-4 py-3'>" . htmlspecialchars($row['nis']) . "</td>";
-            echo "<td class='px-4 py-3'>" . htmlspecialchars($row['full_name']) . "</td>";
-            echo "<td class='px-4 py-3'>" . htmlspecialchars($row['class']) . "</td>";
-            echo "<td class='px-4 py-3'>" . htmlspecialchars($row['category_name']) . "</td>";
-            echo "<td class='px-4 py-3'>" . htmlspecialchars($row['location']) . "</td>";
-            // Deskripsi
-            echo "<td class='px-4 py-3' style='max-width:160px'>";
-            echo "<p class='truncate text-sm text-gray-800'>" . $descShort . "</p>";
-            if ($descNeed) echo "<button onclick=\"openDashModal('$dashModalId')\" class='text-[#4455DD] text-xs hover:underline whitespace-nowrap'>Lihat selengkapnya</button>";
-            echo "</td>";
-            echo "<td class='px-4 py-3'><span class='px-2 py-1 rounded-full text-xs font-semibold $statusClass'>" . ucfirst(htmlspecialchars($row['status'])) . "</span></td>";
-            $reviewClass = match($row['review_status']) {
-                'pending'  => 'bg-[#FFDD44] text-gray-800',
-                'approved' => 'bg-[#BBDD22] text-gray-800',
-                'rejected' => 'bg-[#EE6666] text-white',
-                default    => 'bg-gray-200 text-gray-800'
-            };
-            $reviewLabel = match($row['review_status']) {
-                'pending'  => 'Pending',
-                'approved' => 'Disetujui',
-                'rejected' => 'Ditolak',
-                default    => '-'
-            };
-            $anonimTag = $row['is_anonim'] ? "<span class='ml-1 text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded'>Anonim</span>" : '';
-            echo "<td class='px-4 py-3'><span class='px-2 py-1 rounded-full text-xs font-semibold $reviewClass'>$reviewLabel</span>$anonimTag</td>";
-            if (!empty($row['bukti_foto'])) {
-                $fotoUrl = BASE_PATH . '/public/uploads/bukti/' . htmlspecialchars($row['bukti_foto']);
-                echo "<td class='px-4 py-3'><a href='$fotoUrl' target='_blank'><img src='$fotoUrl' alt='Bukti' class='w-12 h-12 object-contain rounded border border-gray-200 hover:opacity-80 transition'></a></td>";
-            } else {
-                echo "<td class='px-4 py-3 text-gray-400 text-xs'>-</td>";
-            }
-            echo "<td class='px-4 py-3'>" . htmlspecialchars($row['feedback'] ?: '-') . "</td>";
-            echo "<td class='px-4 py-3'>" . date('d-m-Y', strtotime($row['created_at'])) . "</td>";
-            echo "<td class='px-4 py-3'>
-                    <a href='" . BASE_PATH . "/admin/edit_aspirasi?aspiration_id=" . intval($row['aspiration_id']) . "'
-                       class='bg-[#FFDD44] text-gray-800 px-3 py-1 rounded text-xs font-semibold hover:opacity-90 transition'>Edit</a>";
-            if ($isHeadAdmin) {
-                echo " <a href='" . BASE_PATH . "/admin/delete_aspirasi?aspiration_id=" . intval($row['aspiration_id']) . "'
-                       onclick=\"return confirm('Yakin hapus aspirasi ini? Data tidak bisa dikembalikan.')\"
-                       class='bg-[#EE6666] text-white px-3 py-1 rounded text-xs font-semibold hover:opacity-90 transition ml-1'>Hapus</a>";
-            }
-            echo "</td>";
-            echo "</tr>";
-        }
-        ?>
-        </tbody>
-    </table>
-</div>

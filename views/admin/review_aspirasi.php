@@ -36,6 +36,24 @@ $rows = $stmt->fetchAll();
 <?php if (isset($_GET['message']) && $_GET['message'] === 'approved') { ?>
     <div class="bg-[#BBDD22] text-gray-800 px-4 py-3 rounded-lg mb-4 text-sm font-semibold">✅ Aspirasi berhasil disetujui dan kini tampil di histori publik.</div>
 <?php } ?>
+
+<script>
+function toggleDesc(id) {
+    const shortEl = document.getElementById(id + '-short');
+    const fullEl  = document.getElementById(id + '-full');
+    const btn     = document.getElementById(id + '-btn');
+    const isShown = !fullEl.classList.contains('hidden');
+    if (isShown) {
+        fullEl.classList.add('hidden');
+        shortEl.style.display = '-webkit-box';
+        btn.textContent = 'Lihat selengkapnya →';
+    } else {
+        shortEl.style.display = 'none';
+        fullEl.classList.remove('hidden');
+        btn.textContent = 'Sembunyikan ↑';
+    }
+}
+</script>
 <?php if (isset($_GET['message']) && $_GET['message'] === 'rejected') { ?>
     <div class="bg-[#EE6666] text-white px-4 py-3 rounded-lg mb-4 text-sm font-semibold">🚫 Aspirasi ditolak dan tidak akan ditampilkan ke publik.</div>
 <?php } ?>
@@ -82,7 +100,29 @@ $rows = $stmt->fetchAll();
                     </div>
 
                     <!-- Deskripsi -->
-                    <p class="text-sm text-gray-800 leading-relaxed"><?= nl2br(htmlspecialchars($row['description'])) ?></p>
+                    <?php
+                        $descFull    = htmlspecialchars($row['description']);
+                        $descLong    = mb_strlen($row['description']) > 200;
+                        $reviewCardId = 'rdesc-' . intval($row['aspiration_id']);
+                    ?>
+                    <div>
+                        <p id="<?= $reviewCardId ?>-short"
+                           class="text-sm text-gray-800 leading-relaxed"
+                           style="display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word;">
+                            <?= nl2br($descFull) ?>
+                        </p>
+                        <?php if ($descLong): ?>
+                        <p id="<?= $reviewCardId ?>-full"
+                           class="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap hidden">
+                            <?= nl2br($descFull) ?>
+                        </p>
+                        <button onclick="toggleDesc('<?= $reviewCardId ?>')"
+                                id="<?= $reviewCardId ?>-btn"
+                                class="text-[#4455DD] text-xs hover:underline mt-1 font-medium">
+                            Lihat selengkapnya →
+                        </button>
+                        <?php endif; ?>
+                    </div>
 
                     <!-- Foto bukti -->
                     <?php if (!empty($row['bukti_foto'])): ?>
