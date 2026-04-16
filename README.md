@@ -111,4 +111,4 @@ siaduarsip/
 ## 👤 Author
 
 **Bintang** — SMK Rekayasa Perangkat Lunak  
-Proyek UKK (Uji Kompetensi Keahlian) — 2024/2025
+Proyek UKK (Uji Kompetensi Keahlian) — 2026
